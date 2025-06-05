@@ -1,0 +1,345 @@
+import tkinter as tk
+from tkinter import messagebox
+import random 
+
+window = tk.Tk()
+window.title("Quiz Game")
+window.geometry("1000x1000")
+
+home_frame = tk.Frame(window)
+
+
+def show_frame():
+    home_frame.pack_forget()
+    game_frame.pack(fill='both', expand=True)
+    next_question()
+
+home_title = tk.Label(home_frame,text="Welcome To Taniwaha")
+start_button = tk.Button(home_frame,text="start",command=show_frame)
+
+home_title.pack(pady=50)
+start_button.pack(pady=50)
+
+home_frame.pack(fill='both', expand=True)
+game_frame = tk.Frame(window)
+
+quection = {
+    "What is the Māori word for 'family'?": (["Whānau", 
+                                            "Iwi", 
+                                            "Hapū", 
+                                            "Tamariki"], 
+                                            "Whānau"),
+    "What is 'mountain' in Māori?": (["Awa", 
+                                    "Maunga", 
+                                    "Moana", 
+                                    "Ngahere"], 
+                                    "Maunga"),
+    "What is the Māori word for 'river'?": (["Moana", 
+                                            "Roto", 
+                                            "Awa", 
+                                            "Wai"], 
+                                            "Awa"),
+    "How do you say 'hello' in Māori?": (["Kia ora", 
+                                        "Haere rā", 
+                                        "Tēnā koe", 
+                                        "Aroha"], 
+                                        "Kia ora"),
+    "What is the Māori word for 'love'?": (["Mana", 
+                                            "Aroha", 
+                                            "Whenua", 
+                                            "Tapu"], 
+                                            "Aroha"),
+    "What does 'haka' mean?": (["Dance", 
+                                "Fight", 
+                                "Challenge", 
+                                "Traditional war dance"], 
+                                "Traditional war dance"),
+    "What is 'waiata' in Māori culture?": (["Song", 
+                                            "Feast", 
+                                            "Prayer", 
+                                            "Canoe"], 
+                                            "Song"),
+    "What is a 'marae'?": (["House", 
+                            "Church", 
+                            "Meeting place", 
+                            "School"], 
+                            "Meeting place"),
+    "What is 'tamariki'?": (["Parents", 
+                            "Children", 
+                            "Ancestors", 
+                            "Warriors"], 
+                            "Children"),
+    "What does 'mana' mean?": (["Power and respect", 
+                                "Land", 
+                                "Song", 
+                                "Family"], 
+                                "Power and respect"),
+    "How do you say 'goodbye' in Māori?": (["Tēnā koe",
+                                            "Haere rā",
+                                            "Kia ora", 
+                                            "Ngā mihi"], 
+                                            "Haere rā"),
+    "What is the Māori word for 'food'?": (["Kai", 
+                                            "Kaiako", 
+                                            "Kainga", 
+                                            "Karanga"], 
+                                            "Kai"),
+    "What is a 'waka'?": (["Boat", 
+                        "House", 
+                        "Weapon", 
+                        "Song"], 
+                        "Boat"),
+    "What is 'tapu'?": (["Sacred", 
+                        "Clean", 
+                        "Common", 
+                        "Open"], 
+                        "Sacred"),
+    "What is 'whenua'?": (["Water", 
+                        "Sky", 
+                        "Land", 
+                        "Fire"], 
+                        "Land"),
+    "What is the Māori word for 'teacher'?": (["Kaiako", 
+                                            "Tumuaki", 
+                                            "Kaumātua", 
+                                            "Kaitiaki"], 
+                                            "Kaiako"),
+    "What does 'iwi' mean?": (["Tribe", 
+                            "Mountain", 
+                            "Friend", 
+                            "Child"], 
+                            "Tribe"),
+    "What is 'karakia'?": (["Chant/prayer", 
+                            "Farewell", 
+                            "Food", 
+                            "Family"], 
+                            "Chant/prayer"),
+    "What is a 'hongi'?": (["Greeting by pressing noses", 
+                            "Dance", 
+                            "Warrior", 
+                            "Boat"], 
+                            "Greeting by pressing noses"),
+    "What is the Māori word for 'sea'?": (["Moana", 
+                                        "Roto", 
+                                        "Wai", 
+                                        "Maunga"], 
+                                        "Moana"),
+    "What is 'ngahere'?": (["Forest", 
+                            "River", 
+                            "Island", 
+                            "Cave"], 
+                            "Forest"),
+    "What is the Māori name for New Zealand?": (["Aotearoa", 
+                                                "Te Ika", 
+                                                "Te Moana", 
+                                                "Waka"], 
+                                                "Aotearoa"),
+    "What is 'kaumātua'?": (["Elder", 
+                            "Parent", 
+                            "Warrior", 
+                            "Child"], 
+                            "Elder"),
+    "What is the Māori word for 'peace'?": (["Rongo", 
+                                            "Aroha", 
+                                            "Mana", 
+                                            "Tikanga"], 
+                                            "Rongo"),
+    "What is 'tikanga'?": (["Customs and traditions", 
+                            "Peace", 
+                            "Canoe", 
+                            "War dance"], 
+                            "Customs and traditions"),
+    "What is the Māori word for 'sky'?": (["Rangi", 
+                                        "Awa", 
+                                        "Wai", 
+                                        "Maunga"], 
+                                        "Rangi"),
+    "What is a 'kōrero'?": (["Talk/conversation", 
+                            "Dance", 
+                            "Challenge", 
+                            "Boat"], 
+                            "Talk/conversation"),
+    "What is 'kaiako' in English?": (["Teacher", 
+                                    "Food", 
+                                    "Ancestor", 
+                                    "Warrior"], 
+                                    "Teacher"),
+    "What is 'tangi'?": (["Funeral", 
+                        "Song", 
+                        "Greeting", 
+                        "Feast"], 
+                        "Funeral"),
+    "What is 'pounamu'?": (["Greenstone", 
+                            "Forest", 
+                            "Land", 
+                            "River"], 
+                            "Greenstone"),
+    "What is 'aroha nui'?": (["Lots of love", 
+                            "Respect", 
+                            "Goodbye", 
+                            "Sacred water"], 
+                            "Lots of love"),
+    "What is the Māori word for 'ancestor'?": (["Tīpuna", 
+                                                "Tamariki", 
+                                                "Whānau", 
+                                                "Tane"], 
+                                                "Tīpuna"),
+    "What is 'tapu' the opposite of?": (["Noa", 
+                                        "Mana", 
+                                        "Whenua", 
+                                        "Aroha"], 
+                                        "Noa"),
+    "What is the Māori word for 'guardian'?": (["Kaitiaki", 
+                                                "Taniwha", 
+                                                "Kaumātua", 
+                                                "Waka"], 
+                                                "Kaitiaki"),
+    "What is 'tangata whenua'?": (["People of the land", 
+                                "Visitors", 
+                                "Children", 
+                                "Singers"], 
+                                "People of the land"),
+    "What does 'Tēnā koe' mean?": (["Hello (to one person)", 
+                                    "Thank you", 
+                                    "Goodbye", 
+                                    "Peace be with you"], 
+                                    "Hello (to one person)"),
+    "What is 'whakapapa'?": (["Genealogy", 
+                            "Dance", 
+                            "Spirit", 
+                            "Land"], 
+                            "Genealogy"),
+    "What is the Māori word for 'moon'?": (["Marama", 
+                                            "Whetū", 
+                                            "Rā", 
+                                            "Ahi"], 
+                                            "Marama"),
+    "What does 'whetū' mean?": (["Star", 
+                                "Moon", 
+                                "Sky", 
+                                "Ancestor"], 
+                                "Star"),
+    "What is the Māori word for 'sun'?": (["Rā", 
+                                        "Wai", 
+                                        "Moana", 
+                                        "Roto"], 
+                                        "Rā"),
+    "What is 'ahi'?": (["Fire", 
+                        "Water", 
+                        "Cave", 
+                        "Wind"], 
+                        "Fire"),
+    "What is 'kura'?": (["School", 
+                        "Canoe", 
+                        "Food", 
+                        "Love"], 
+                        "School"),
+    "What is the Māori word for 'island'?": (["Motu", 
+                                            "Moana", 
+                                            "Roto", 
+                                            "Awa"], 
+                                            "Motu"),
+    "What is a 'taniwha'?": (["Mythical guardian creature", 
+                            "Tribe leader", 
+                            "Warrior", 
+                            "Elder"], 
+                            "Mythical guardian creature"),
+    "What does 'Haere mai' mean?": (["Welcome", 
+                                    "Goodbye", 
+                                    "Thank you", 
+                                    "Go away"], 
+                                    "Welcome"),
+    "What does 'Haere rā' mean?": (["Goodbye", 
+                                    "Hello", 
+                                    "Thank you", 
+                                    "Sing"], 
+                                    "Goodbye"),
+    "What is the Māori word for 'wind'?": (["Hau", 
+                                            "Ahi", 
+                                            "Rangi", 
+                                            "Wai"], 
+                                            "Hau"),
+    "What is 'wai'?": (["Water", 
+                        "Land", 
+                        "Sun", 
+                        "Wind"], 
+                        "Water"),
+    "What is the Māori word for 'lake'?": (["Roto", 
+                                            "Awa", 
+                                            "Moana", 
+                                            "Wai"], 
+                                            "Roto"),
+    "What is 'karanga'?": (["Ceremonial call", 
+                            "Dance", 
+                            "Food", 
+                            "Challenge"], 
+                            "Ceremonial call")
+}
+
+score = 0 #set the score to 0
+
+score_boxes = []#list to stor the scor boxs
+grid_frame = tk.Frame(game_frame)#grid of the scor box
+grid_frame.grid(row=0,column=0,columnspan=2,pady=10)#alines the grid
+
+for i in range(5):#5 rows of the scor represantative
+    row = []#empty ine to keep the scor boxess
+    for j in range(10):#ten colums of the reprasentative 
+        box = tk.Label(game_frame, width=4,height=2,bg="white",relief="solid", bd=1)#scor grid
+        box.grid(row=i,column=j,padx=1,pady=1)#pacemant of rgw indivigual score boxes 
+        row.append(box) #putting the boxes in the row 
+    score_boxes.append(row)#linking the rows to the score_box list 
+
+question_label = tk.Label(game_frame, text="",font=("Arial",16), wraplength=600,justify="center")#lable to show the quection 
+question_label.grid(row=5,column=0,columnspan=2,pady=20)#position of the quecton 
+
+answer_buttons = []#a list to stor the answer_buttons
+for i in range(4):#4 battens for the answer 
+    btn = tk.Button(game_frame, text="",font=("Arial",14),width=30)# spexs of the putens 
+    btn.grid(row=6 + i // 2, column=i % 2, padx=10, pady=10)#alinmant of the buttens "2 in a row"
+    answer_buttons.append(btn)# linking the burns to the answer_buttons list 
+
+def update_score():#udating the score 
+    filled = score# copping the current score 
+    for i in range(5):#looping the 5 rows
+        for j in range(10):#looping the 10 colems 
+            if filled > 0:#if the scor is grateor than 0 
+                score_boxes[i][j].config(bg="green")#turn the box green 
+                filled -= 1#decreese the number of boxes to be marked 
+            else:
+                score_boxes[i][j].config(bg="white")#kepp the boxes un marked 
+
+def next_question():#
+    global current_question, correct_answer#acces globle veriabals for currant qection and answers 
+    if score >=50:#if the scor is eqval or grator than 50
+        messagebox.showinfo("You win")#show a the user he won
+        window.quit()#exist the game 
+        return#
+    current_question, (options, correct_answer)=random.choice(list(quection.items()))#
+    random.shuffle(options)#shufal the ansers 
+    question_label.config(text=current_question)#update the qection with the new one
+
+    for i in range(4):#
+        answer_buttons[i].config(
+            text=options[i], #set the ansewers to the buttens 
+            command=lambda opt=options[i]: check_answer(opt)#when the buttens are pushed the anser will be cheked 
+        )#
+
+def check_answer(selected):#
+    global score# acses the scor e
+
+    if selected == correct_answer:# is the anser is correct 
+        messagebox.showinfo("correct")#show the user thet hae is correct 
+        score = min(score+1,50)#update the scor by 1 with a limit of 50
+    else: 
+        messagebox.showinfo("wrong")#in form the user that he is wrong
+        score = max(score-1,0)   #ub date he scor by -1 with a limit of 0
+    update_score()#
+    next_question()#
+
+
+
+window.mainloop()#
+
+
+     
