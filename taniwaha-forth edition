@@ -1,0 +1,244 @@
+import tkinter as tk
+from tkinter import messagebox
+import random
+import json
+ # This helps us check if a file exists
+
+# File to save questions in
+# Returns a dictionary with question text as keys and (options, correct_answer) as values
+def load_questions():
+    try:
+        with open("question.json", "r", encoding="utf-8") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        with open("question.json", "w", encoding="utf-8") as file:
+         json.dump({}, file)
+        return {}  # If file is not found, return an empty dictionary
+
+# This function saves the current state of the questions to a JSON file
+def save_questions():
+    with open("question.json", "w", encoding="utf-8") as file:
+        json.dump(questions, file, indent=4, ensure_ascii=False)  # Write questions with formatting
+
+# Load questions from JSON at the beginning
+questions = load_questions()
+
+if not questions:
+    questions.update({
+            "What is a 'waka'?": [["Boat", "House", "Weapon", "Song"], "Boat"],
+    "What is 'tapu'?": [["Sacred", "Clean", "Common", "Open"], "Sacred"],
+    "What is 'whenua'?": [["Water", "Sky", "Land", "Fire"], "Land"],
+    "What is the Māori word for 'teacher'?": [["Kaiako", "Tumuaki", "Kaumātua", "Kaitiaki"], "Kaiako"],
+    "What does 'iwi' mean?": [["Tribe", "Mountain", "Friend", "Child"], "Tribe"],
+    "What is 'karakia'?": [["Chant/prayer", "Farewell", "Food", "Family"], "Chant/prayer"],
+    "What is a 'hongi'?": [["Greeting by pressing noses", "Dance", "Warrior", "Boat"], "Greeting by pressing noses"],
+    "What is the Māori word for 'sea'?": [["Moana", "Roto", "Wai", "Maunga"], "Moana"],
+    "What is 'ngahere'?": [["Forest", "River", "Island", "Cave"], "Forest"],
+    "What is the Māori name for New Zealand?": [["Aotearoa", "Te Ika", "Te Moana", "Waka"], "Aotearoa"],
+    "What is 'kaumātua'?": [["Elder", "Parent", "Warrior", "Child"], "Elder"],
+    "What is the Māori word for 'peace'?": [["Rongo", "Aroha", "Mana", "Tikanga"], "Rongo"],
+    "What is 'tikanga'?": [["Customs and traditions", "Peace", "Canoe", "War dance"], "Customs and traditions"],
+    "What is the Māori word for 'sky'?": [["Rangi", "Awa", "Wai", "Maunga"], "Rangi"],
+    "What is a 'kōrero'?": [["Talk/conversation", "Dance", "Challenge", "Boat"], "Talk/conversation"],
+    "What is 'kaiako' in English?": [["Teacher", "Food", "Ancestor", "Warrior"], "Teacher"],
+    "What is 'tangi'?": [["Funeral", "Song", "Greeting", "Feast"], "Funeral"],
+    "What is 'pounamu'?": [["Greenstone", "Forest", "Land", "River"], "Greenstone"],
+    "What is 'aroha nui'?": [["Lots of love", "Respect", "Goodbye", "Sacred water"], "Lots of love"],
+    "What is the Māori word for 'ancestor'?": [["Tīpuna", "Tamariki", "Whānau", "Tane"], "Tīpuna"],
+    "What is 'tapu' the opposite of?": [["Noa", "Mana", "Whenua", "Aroha"], "Noa"],
+    "What is the Māori word for 'guardian'?": [["Kaitiaki", "Taniwha", "Kaumātua", "Waka"], "Kaitiaki"],
+    "What is 'tangata whenua'?": [["People of the land", "Visitors", "Children", "Singers"], "People of the land"],
+    "What does 'Tēnā koe' mean?": [["Hello (to one person)", "Thank you", "Goodbye", "Peace be with you"], "Hello (to one person)"],
+    "What is 'whakapapa'?": [["Genealogy", "Dance", "Spirit", "Land"], "Genealogy"],
+    "What is the Māori word for 'moon'?": [["Marama", "Whetū", "Rā", "Ahi"], "Marama"],
+    "What does 'whetū' mean?": [["Star", "Moon", "Sky", "Ancestor"], "Star"],
+    "What is the Māori word for 'sun'?": [["Rā", "Wai", "Moana", "Roto"], "Rā"],
+    "What is 'ahi'?": [["Fire", "Water", "Cave", "Wind"], "Fire"],
+    "What is 'kura'?": [["School", "Canoe", "Food", "Love"], "School"],
+    "What is the Māori word for 'island'?": [["Motu", "Moana", "Roto", "Awa"], "Motu"],
+    "What is a 'taniwha'?": [["Mythical guardian creature", "Tribe leader", "Warrior", "Elder"], "Mythical guardian creature"],
+    "What does 'Haere mai' mean?": [["Welcome", "Goodbye", "Thank you", "Go away"], "Welcome"],
+    "What does 'Haere rā' mean?": [["Goodbye", "Hello", "Thank you", "Sing"], "Goodbye"],
+    "What is the Māori word for 'wind'?": [["Hau", "Ahi", "Rangi", "Wai"], "Hau"],
+    "What is 'wai'?": [["Water", "Land", "Sun", "Wind"], "Water"],
+    "What is the Māori word for 'lake'?": [["Roto", "Awa", "Moana", "Wai"], "Roto"],
+    "What is 'karanga'?": [["Ceremonial call", "Dance", "Food", "Challenge"], "Ceremonial call"]
+    })
+    save_questions()
+
+
+# Main game class
+class MaoriQuizGame:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Māori Quiz Game")
+        self.root.geometry("400x600")
+
+        self.score = 0
+        self.current_question = ""
+        self.correct_answer = ""
+
+        # Create 3 screens (frames)
+        self.home_frame = tk.Frame(root)
+        self.game_frame = tk.Frame(root)
+        self.edit_frame = tk.Frame(root)
+
+        for frame in (self.home_frame, self.game_frame, self.edit_frame):
+            frame.grid(row=0, column=0, sticky="nsew")
+
+        self.create_home_screen()
+        self.create_game_screen()
+        self.create_edit_screen()
+        self.show_frame(self.home_frame)
+
+    def show_frame(self, frame):
+        frame.tkraise()
+
+    # Home screen with Start and Edit buttons
+    def create_home_screen(self):
+        title = tk.Label(self.home_frame, text="Welcome To Māori Quiz!", font=("Arial", 20))
+        title.pack(pady=50)
+
+        start_button = tk.Button(self.home_frame, text="Start Quiz", font=("Arial", 16), command=self.start_game)
+        start_button.pack(pady=10)
+
+        edit_button = tk.Button(self.home_frame, text="Edit Questions", font=("Arial", 16),
+                                command=lambda: self.show_frame(self.edit_frame))
+        edit_button.pack(pady=10)
+
+    # Screen for editing the question list
+    def create_edit_screen(self):
+        title = tk.Label(self.edit_frame, text="Edit Questions", font=("Arial", 18))
+        title.grid(row=0, column=1, columnspan=2, pady=10)
+
+        self.new_question_entry = tk.Entry(self.edit_frame, width=30)
+        self.new_question_entry.grid(row=1, column=1, columnspan=2)
+        self.new_question_entry.insert(0, "Type the question here")
+
+        self.option_entries = []
+        for i in range(4):
+            entry = tk.Entry(self.edit_frame, width=30)
+            entry.grid(row=2 + i, column=1, columnspan=2, pady=2)
+            entry.insert(0, f"Option {i+1}")
+            self.option_entries.append(entry)
+
+        self.correct_entry = tk.Entry(self.edit_frame, width=30)
+        self.correct_entry.grid(row=6, column=1, columnspan=2, pady=5)
+        self.correct_entry.insert(0, "Correct answer")
+
+        tk.Button(self.edit_frame, text="Add Question", command=self.add_question).grid(row=7, column=1, columnspan=2)
+        tk.Button(self.edit_frame, text="Home", command=lambda: self.show_frame(self.home_frame)).grid(row=8, column=1, columnspan=2, pady=5)
+
+        self.question_listbox = tk.Listbox(self.edit_frame, width=45, height=6)
+        self.question_listbox.grid(row=9, column=1, columnspan=2, pady=10)
+
+        tk.Button(self.edit_frame, text="Remove Selected", command=self.remove_selected_question).grid(row=10, column=1, columnspan=2)
+        self.update_question_listbox()
+
+    # Refresh the question list on the edit screen
+    def update_question_listbox(self):
+        self.question_listbox.delete(0, tk.END)
+        for q in questions.keys():
+            self.question_listbox.insert(tk.END, q)
+
+    def remove_selected_question(self):
+        selected_index = self.question_listbox.curselection()
+        if not selected_index:
+            messagebox.showerror("Error", "Please select a question to remove.")
+            return
+        selected_question = self.question_listbox.get(selected_index)
+        confirm = messagebox.askyesno("Confirm", f"Delete this question?\n\n{selected_question}")
+        if confirm:
+            del questions[selected_question]
+            save_questions()  # Save changes
+            self.update_question_listbox()
+            messagebox.showinfo("Removed", "Question removed.")
+
+    def add_question(self):
+        question_text = self.new_question_entry.get().strip()
+        options = [entry.get().strip() for entry in self.option_entries]
+        correct = self.correct_entry.get().strip()
+
+        if not question_text or len(options) != 4 or correct not in options:
+            messagebox.showerror("Error", "Please fill in all options and make sure the correct answer is one of them.")
+            return
+        if question_text in questions:
+            messagebox.showerror("Error", "This question already exists.")
+            return
+
+        questions[question_text] = [options, correct]
+        save_questions()  # Save the updated question set
+        messagebox.showinfo("Added", "Question added successfully.")
+        self.update_question_listbox()
+
+    # Screen for quiz gameplay
+    def create_game_screen(self):
+        self.score_boxes = []
+
+        grid_frame = tk.Frame(self.game_frame)
+        grid_frame.pack(pady=10)
+
+        for i in range(5):
+            row = []
+            for j in range(10):
+                box = tk.Label(grid_frame, width=4, height=2, bg="white", relief="solid")
+                box.grid(row=i, column=j, padx=1, pady=1)
+                row.append(box)
+            self.score_boxes.append(row)
+
+        self.question_label = tk.Label(self.game_frame, text="", font=("Arial", 16), wraplength=300, justify="center")
+        self.question_label.pack(pady=20)
+
+        self.answer_buttons = []
+        for i in range(4):
+            btn = tk.Button(self.game_frame, text="", font=("Arial", 14), wraplength=300)
+            btn.pack(pady=5)
+            self.answer_buttons.append(btn)
+
+    def start_game(self):
+        self.score = 0
+        self.update_score()
+        self.show_frame(self.game_frame)
+        self.next_question()
+
+    def update_score(self):
+        filled = self.score
+        for i in range(5):
+            for j in range(10):
+                color = "green" if filled > 0 else "white"
+                self.score_boxes[i][j].config(bg=color)
+                filled -= 1 if filled > 0 else 0
+
+    def next_question(self):
+        if self.score >= 50:
+            messagebox.showinfo("Victory", "You scored 50! You win!")
+            self.root.quit()
+            return
+        self.current_question, data = random.choice(list(questions.items()))
+        options, self.correct_answer = data
+        random.shuffle(options)
+
+        self.question_label.config(text=self.current_question)
+        for i in range(4):
+            self.answer_buttons[i].config(
+                text=options[i],
+                command=lambda opt=options[i]: self.check_answer(opt)
+            )
+
+    def check_answer(self, selected):
+        if selected == self.correct_answer:
+            messagebox.showinfo("Correct", "That's right!")
+            self.score = min(self.score + 1, 50)
+        else:
+            messagebox.showinfo("Wrong", f"Sorry, the correct answer was: {self.correct_answer}")
+            self.score = max(self.score - 1, 0)
+        self.update_score()
+        self.next_question()
+
+
+# Run the game
+if __name__ == "__main__":
+    root = tk.Tk()
+    game = MaoriQuizGame(root)
+    root.mainloop()
+
